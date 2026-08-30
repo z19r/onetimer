@@ -28,6 +28,11 @@ console:
 clean:
     rm -rf test/dummy/db/*.sqlite3 test/dummy/log coverage pkg
 
-# Bump version, tag, and push a new release to RubyGems (bundle exec rake release)
+# Tag the version in lib/onetimer/version.rb and push — CI publishes to RubyGems
 release:
-    bundle exec rake release
+    #!/usr/bin/env bash
+    set -euo pipefail
+    version=$(ruby -Ilib -e 'require "onetimer/version"; puts Onetimer::VERSION')
+    git tag "v${version}"
+    git push origin "v${version}"
+    echo "Pushed v${version} — CI will build and publish to RubyGems"

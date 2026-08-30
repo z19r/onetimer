@@ -63,6 +63,17 @@ just test
 just lint
 ```
 
+## Releasing
+
+1. Bump `Onetimer::VERSION` in `lib/onetimer/version.rb`, commit.
+2. `just release` — tags the commit and pushes the tag.
+3. CI (`.github/workflows/publish.yml`) builds the gem and pushes it to
+   RubyGems.org using the `RUBYGEMS_API_KEY` repo secret.
+
+One-time setup: add a RubyGems.org API key (Account → API Keys, scoped to
+"Push rubygem") as the `RUBYGEMS_API_KEY` secret in the repo's Actions
+settings.
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at
