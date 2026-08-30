@@ -1,0 +1,69 @@
+# Onetimer
+
+Runs one-off data tasks exactly once, the way `db:migrate` runs schema
+migrations exactly once — safe to run repeatedly, safe across concurrent
+deploy machines.
+
+## Installation
+
+```ruby
+gem "onetimer"
+```
+
+```bash
+bundle install
+bin/rails generate onetimer:install
+bin/rails db:migrate
+```
+
+The generator adds a migration for the `onetimer_tasks` tracking table and
+creates `lib/one_timers/`.
+
+## Usage
+
+Generate a task:
+
+```bash
+bin/rake onetimer:new NAME=backfill_something
+```
+
+This creates `lib/one_timers/<timestamp>_backfill_something.rb`:
+
+```ruby
+module OneTimers
+  class BackfillSomething
+    def run
+      # One-time task logic goes here.
+    end
+  end
+end
+```
+
+Run pending tasks (idempotent — already-completed tasks are skipped):
+
+```bash
+bin/rake onetimer:run
+```
+
+Typically wired into your deploy entrypoint alongside `db:migrate`.
+
+## Configuration
+
+Tasks live in `lib/one_timers/` by default. Override in an initializer:
+
+```ruby
+Rails.application.config.onetimer.tasks_dir = Rails.root.join("lib/data_tasks")
+```
+
+## Development
+
+```bash
+just setup
+just test
+just lint
+```
+
+## Contributing
+
+Bug reports and pull requests are welcome on GitHub at
+https://github.com/z19r/onetimer.
