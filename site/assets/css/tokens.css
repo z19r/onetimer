@@ -1,0 +1,79 @@
+/* Onetimer design tokens — synced from the "Onetimer Design System" Claude
+   Design project (letterpress theme). Edit tokens there, re-sync here. */
+
+@import url("https://fonts.googleapis.com/css2?family=Limelight&family=Antic+Didone&family=Sorts+Mill+Goudy:ital@0;1&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap");
+
+:root {
+  /* Color */
+  --ink-900: #140F0C; --ink-800: #211812; --ink-700: #33261D; --ink-600: #4A3728;
+  --ink-400: #7A6650; --ink-300: #A08D74;
+  --paper-100: #FBF5E9; --paper-200: #F2E7D3; --paper-300: #E6D8BE; --paper-400: #D6C4A4;
+
+  --ruby-900: #4A0C18; --ruby-700: #7B1226; --ruby-600: #9B1B31; --ruby-500: #B4232F; --ruby-200: #E7B6B4;
+  --brass-700: #8A6420; --brass-500: #B98B3C; --brass-400: #CFA85B; --brass-200: #EAD6A6;
+  --jade-800: #123F38; --jade-600: #1F5F55; --jade-400: #4A8A7C; --jade-200: #BCD8CE;
+  --lacquer-800: #0E3B44; --lacquer-600: #175C69; --lacquer-400: #3E8B99; --lacquer-200: #BBD9DE;
+
+  --bg-page: var(--paper-200); --bg-sunken: var(--paper-300); --bg-raised: var(--paper-100);
+  --bg-inverse: var(--ink-900); --bg-inverse-raised: var(--ink-800);
+  --text-body: var(--ink-800); --text-heading: var(--ink-900); --text-muted: var(--ink-400);
+  --text-on-dark: var(--paper-200); --text-on-dark-muted: var(--ink-300);
+  --text-accent: var(--ruby-700); --text-link: var(--lacquer-600); --text-link-hover: var(--ruby-600);
+  --surface-card: var(--paper-100); --surface-card-border: var(--ink-900);
+  --surface-plate: var(--ink-900);
+  --rule-hairline: var(--ink-900); --rule-metal: var(--brass-500); --rule-soft: var(--paper-400);
+  --accent-primary: var(--ruby-700); --accent-primary-hover: var(--ruby-900); --accent-secondary: var(--brass-500);
+  --status-completed: var(--jade-600); --status-running: var(--brass-500); --status-pending: var(--ink-400); --status-failed: var(--ruby-500);
+  --focus-ring: var(--lacquer-600);
+  --code-bg: var(--ink-900); --code-text: var(--paper-200); --code-comment: var(--ink-300); --code-string: var(--brass-400); --code-keyword: var(--ruby-200);
+
+  /* Typography */
+  --font-display: "Limelight", Georgia, serif;
+  --font-title: "Antic Didone", "Times New Roman", serif;
+  --font-body: "Sorts Mill Goudy", Georgia, serif;
+  --font-mono: "Courier Prime", "Courier New", monospace;
+
+  --size-display-1: 64px; --size-display-2: 44px; --size-display-3: 30px;
+  --size-title-1: 34px; --size-title-2: 26px; --size-title-3: 20px;
+  --size-body-lg: 19px; --size-body: 17px; --size-body-sm: 15px; --size-caption: 13px;
+  --size-label: 12px; --size-code: 15px; --size-code-sm: 13px;
+
+  --leading-tight: 1.08; --leading-title: 1.2; --leading-body: 1.62; --leading-loose: 1.8;
+  --tracking-display: 0.09em; --tracking-label: 0.22em; --tracking-title: 0.01em; --tracking-body: 0;
+  --weight-regular: 400; --weight-bold: 700;
+
+  /* Spacing */
+  --space-0: 0; --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-5: 24px;
+  --space-6: 32px; --space-7: 48px; --space-8: 64px; --space-9: 96px; --space-10: 128px;
+  --gutter-page: 40px; --gutter-page-sm: 20px;
+  --measure-prose: 62ch; --measure-narrow: 44ch;
+  --width-content: 1080px; --width-column: 720px;
+
+  /* Surfaces */
+  --radius-none: 0; --radius-sm: 2px; --radius-md: 3px; --radius-pill: 999px;
+  --border-hairline: 1px; --border-rule: 2px; --border-heavy: 3px;
+  --shadow-plate: 3px 3px 0 var(--ink-900);
+  --shadow-plate-lifted: 5px 5px 0 var(--ink-900);
+  --shadow-press: 1px 1px 0 var(--ink-900);
+  --texture-paper: radial-gradient(circle at 20% 18%, rgba(180,35,47,.035), transparent 55%), radial-gradient(circle at 82% 76%, rgba(185,139,60,.05), transparent 50%);
+  --stripe-deco: repeating-linear-gradient(90deg, var(--ink-900) 0 6px, transparent 6px 12px);
+  --chevron-deco: repeating-linear-gradient(135deg, var(--brass-500) 0 7px, transparent 7px 14px);
+
+  /* Motion */
+  --ease-standard: cubic-bezier(.2,.7,.3,1);
+  --ease-mechanical: cubic-bezier(.85,0,.15,1);
+  --dur-instant: 90ms; --dur-fast: 150ms; --dur-base: 240ms; --dur-slow: 420ms;
+}
+
+body {
+  background: var(--bg-page);
+  background-image: var(--texture-paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: var(--size-body);
+  line-height: var(--leading-body);
+}
+a { color: var(--text-link); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a:hover { color: var(--text-link-hover); }
+::selection { background: var(--brass-200); color: var(--ink-900); }
+*:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }

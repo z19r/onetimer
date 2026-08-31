@@ -1,0 +1,12 @@
+[build]
+base = "site"
+command = "ruby build.rb"
+publish = "dist"
+
+[build.environment]
+RUBY_VERSION = "3.2.2"
+
+[[redirects]]
+from = "/docs"
+to = "/docs/"
+status = 301
