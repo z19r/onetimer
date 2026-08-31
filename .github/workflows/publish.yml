@@ -12,12 +12,45 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
+
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: "3.2"
           bundler-cache: true
+
+      - name: Verify tag matches version.rb
+        run: |
+          VERSION=$(ruby -Ilib -e 'require "onetimer/version"; puts Onetimer::VERSION')
+          TAG="${GITHUB_REF_NAME#v}"
+          if [ "$VERSION" != "$TAG" ]; then
+            echo "version.rb ($VERSION) does not match tag ($TAG)"
+            exit 1
+          fi
+
+      - name: Check RubyGems version
+        id: gem
+        run: |
+          VERSION=$(ruby -Ilib -e 'require "onetimer/version"; puts Onetimer::VERSION')
+          STATUS=$(curl -sS \
+            -o /dev/null \
+            -w "%{http_code}" \
+            "https://rubygems.org/api/v2/rubygems/onetimer/versions/${VERSION}.json")
+          if [ "$STATUS" = "200" ]; then
+            echo "needed=false" >> "$GITHUB_OUTPUT"
+            echo "Version ${VERSION} is already published"
+          elif [ "$STATUS" = "404" ]; then
+            echo "needed=true" >> "$GITHUB_OUTPUT"
+            echo "Version ${VERSION} is not published yet"
+          else
+            echo "Unexpected RubyGems status: $STATUS"
+            exit 1
+          fi
+
       - run: bundle exec rake test rubocop
+        if: steps.gem.outputs.needed == 'true'
+
       - name: Build and push gem
+        if: steps.gem.outputs.needed == 'true'
         env:
           GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
         run: |
