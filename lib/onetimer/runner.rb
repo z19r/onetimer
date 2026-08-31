@@ -20,6 +20,11 @@ module Onetimer
       raise Onetimer::Error, error_message
     end
 
+    def self.pending_task_names
+      task_files.map { |file| File.basename(file, ".rb") }
+                .reject { |name| Task.exists?(name: name, status: "completed") }
+    end
+
     def self.generate!(name)
       timestamp = Time.current.strftime("%Y%m%d%H%M%S")
       class_name = name.camelize

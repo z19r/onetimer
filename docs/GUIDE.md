@@ -112,6 +112,12 @@ Verify the `onetimer_tasks` table has the required unique index on `:name`
 bin/rake onetimer:doctor
 ```
 
+List what would run without running it:
+
+```bash
+bin/rake onetimer:pending
+```
+
 ## Configuration
 
 One setting, set in an initializer:
@@ -185,9 +191,9 @@ or before a deploy to catch this — see [Running tasks](#running-tasks).
 
 <https://github.com/z19r/onetimer/issues/5>
 
-No dry-run mode. `bin/rake onetimer:run` executes pending tasks
-immediately; there is no `--check` or `--pending` listing built in
-today.
+`bin/rake onetimer:run` executes pending tasks immediately — it doesn't
+support a dry-run flag. Use `bin/rake onetimer:pending` to list what would
+run without running it; see [Running tasks](#running-tasks).
 
 ### Tasks run in filename sort order (#6)
 
