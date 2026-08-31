@@ -55,6 +55,11 @@ Tasks live in `lib/one_timers/` by default. Override in an initializer:
 Rails.application.config.onetimer.tasks_dir = Rails.root.join("lib/data_tasks")
 ```
 
+## Gotchas
+
+See [docs/GUIDE.md](docs/GUIDE.md#gotchas) for known sharp edges (renaming
+files, retry behavior, ordering, etc.).
+
 ## Development
 
 ```bash
@@ -77,4 +82,4 @@ settings.
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at
-https://github.com/z19r/onetimer.
+<https://github.com/z19r/onetimer>.
