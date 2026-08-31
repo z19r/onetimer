@@ -27,6 +27,45 @@ class Onetimer::RunnerTest < ActiveSupport::TestCase
     assert_not Onetimer::Task.exists?(name: "20260101000000_runner_test_fail")
   end
 
+  test "with record_failures enabled, a failed task leaves a failed Task row with the error message" do
+    Onetimer.record_failures = true
+    write_task("20260101000000_runner_test_record_fail", 'raise "boom"')
+
+    assert_raises(RuntimeError) { Onetimer::Runner.run_pending! }
+
+    task = Onetimer::Task.find_by(name: "20260101000000_runner_test_record_fail")
+    assert task
+    assert_equal "failed", task.status
+    assert_equal "boom", task.error_message
+  ensure
+    Onetimer.record_failures = nil
+  end
+
+  test "with record_failures enabled, retrying a fixed task after a failure succeeds" do
+    Onetimer.record_failures = true
+    name = "20260101000000_runner_test_record_retry"
+    # The task file is only require'd once (Ruby caches by path), so simulate
+    # "fix the task and redeploy" with internal state: fails on the first
+    # run, succeeds on the second — same as a task that raised once and
+    # whose underlying issue was then fixed.
+    write_task(name, <<~RUBY)
+      @@attempts ||= 0
+      @@attempts += 1
+      raise "boom" if @@attempts == 1
+      Onetimer::RunnerTest.run_count += 1
+    RUBY
+
+    assert_raises(RuntimeError) { Onetimer::Runner.run_pending! }
+    assert Onetimer::Task.exists?(name: name, status: "failed")
+
+    Onetimer::Runner.run_pending!
+
+    assert Onetimer::Task.exists?(name: name, status: "completed")
+    assert_equal 1, self.class.run_count
+  ensure
+    Onetimer.record_failures = nil
+  end
+
   class << self
     attr_accessor :run_count
   end

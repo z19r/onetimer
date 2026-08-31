@@ -8,6 +8,6 @@ module Onetimer
   class Error < StandardError; end
 
   class << self
-    attr_accessor :tasks_dir
+    attr_accessor :tasks_dir, :record_failures
   end
 end

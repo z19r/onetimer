@@ -5,6 +5,6 @@ module Onetimer
     self.table_name = "onetimer_tasks"
 
     validates :name, presence: true, uniqueness: true
-    validates :status, inclusion: { in: %w[running completed] }
+    validates :status, inclusion: { in: %w[running completed failed] }
   end
 end

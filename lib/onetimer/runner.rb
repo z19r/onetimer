@@ -49,16 +49,27 @@ module Onetimer
       task.update!(status: "completed", finished_at: Time.current)
       Rails.logger.info "[Onetimer] completed #{name}"
     rescue StandardError => e
-      task&.destroy!
+      handle_failure(task, e)
       Rails.logger.error "[Onetimer] failed #{name}: #{e.message}"
       raise
     end
     private_class_method :run_task
 
+    def self.handle_failure(task, error)
+      if Onetimer.record_failures
+        task&.update!(status: "failed", error_message: error.message, finished_at: Time.current)
+      else
+        task&.destroy!
+      end
+    end
+    private_class_method :handle_failure
+
     # Unique index on name makes this an atomic claim: if two processes
     # (e.g. concurrent deploy machines) race to run the same task, only
     # one succeeds in creating the row and actually runs it.
     def self.claim(name)
+      Task.where(name: name, status: "failed").destroy_all if Onetimer.record_failures
+
       Task.create!(name: name, status: "running", started_at: Time.current)
     rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique
       nil
