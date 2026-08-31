@@ -56,9 +56,14 @@ module Onetimer
     private_class_method :run_task
 
     def self.handle_failure(task, error)
-      if Onetimer.record_failures
-        task&.update!(status: "failed", error_message: error.message, finished_at: Time.current)
+      if Onetimer.record_failures && task.respond_to?(:error_message=)
+        task.update!(status: "failed", error_message: error.message, finished_at: Time.current)
       else
+        if Onetimer.record_failures
+          Rails.logger.warn "[Onetimer] record_failures is enabled but onetimer_tasks is missing " \
+                             "the error_message column — add a migration (add_column " \
+                             ":onetimer_tasks, :error_message, :text). Falling back to destroying the row."
+        end
         task&.destroy!
       end
     end

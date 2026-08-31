@@ -107,17 +107,26 @@ deploy entrypoint right alongside `db:migrate`.
 
 ## Configuration
 
-One setting, set in an initializer:
+Two settings, set in an initializer:
 
 ```ruby
 # config/initializers/onetimer.rb
 Rails.application.config.onetimer.tasks_dir = Rails.root.join("lib/data_tasks")
+Rails.application.config.onetimer.record_failures = true
 ```
 
-Default is `Rails.root.join("lib/one_timers")` (`lib/onetimer/engine.rb`).
-There's currently no config for things like a custom table name, retry
-behavior, or logging destination — `Task` hardcodes the `onetimer_tasks`
-table, and failures go through `Rails.logger`.
+`tasks_dir` defaults to `Rails.root.join("lib/one_timers")`
+(`lib/onetimer/engine.rb`).
+
+`record_failures` defaults to `false`: a failed task's row is destroyed so
+it retries on the next deploy. Set it to `true` to instead keep the row
+marked `failed` with `error_message` set. Existing apps must add that
+column first (`add_column :onetimer_tasks, :error_message, :text`) — if
+`record_failures` is enabled without it, `Runner` logs a warning and falls
+back to destroying the row.
+
+There's currently no config for things like a custom table name — `Task`
+hardcodes the `onetimer_tasks` table.
 
 ## Supported databases
 
@@ -150,10 +159,11 @@ different names.
 
 <https://github.com/z19r/onetimer/issues/2>
 
-A failed task's row is destroyed, not marked `failed`. This is
-intentional — it lets you fix the task and retry on the next deploy —
-but it also means there is no persistent record of *why* a task failed
-beyond what you logged. Check `Rails.logger` output at deploy time.
+By default a failed task's row is still destroyed, not marked `failed` —
+that's intentional, it lets you fix the task and retry on the next deploy.
+Opt into keeping a persistent `failed` row with the error message via
+`Onetimer.record_failures` (see [Configuration](#configuration)); without
+that opt-in, check `Rails.logger` output at deploy time.
 
 ### Editing completed task files has no effect (#3)
 

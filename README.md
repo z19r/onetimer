@@ -60,6 +60,16 @@ Tasks live in `lib/one_timers/` by default. Override in an initializer:
 Rails.application.config.onetimer.tasks_dir = Rails.root.join("lib/data_tasks")
 ```
 
+Failed tasks are destroyed by default so they retry on the next deploy. Opt
+into keeping a `failed` row with the error message instead:
+
+```ruby
+Rails.application.config.onetimer.record_failures = true
+```
+
+Existing apps need a migration first: `add_column :onetimer_tasks,
+:error_message, :text`.
+
 ## Gotchas
 
 See [docs/GUIDE.md](docs/GUIDE.md#gotchas) for known sharp edges (renaming

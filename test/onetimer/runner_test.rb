@@ -66,6 +66,37 @@ class Onetimer::RunnerTest < ActiveSupport::TestCase
     Onetimer.record_failures = nil
   end
 
+  test "with record_failures enabled but no error_message column, falls back to destroying the row and warns" do
+    Onetimer.record_failures = true
+    write_task("20260101000000_runner_test_no_column", 'raise "boom"')
+
+    warned_messages = []
+    Onetimer::Task.class_eval do
+      alias_method :__original_respond_to_for_test?, :respond_to?
+      define_method(:respond_to?) do |method, *args|
+        method == :error_message= ? false : __original_respond_to_for_test?(method, *args)
+      end
+    end
+
+    begin
+      Rails.logger.stub(:warn, ->(msg) { warned_messages << msg }) do
+        assert_raises(RuntimeError) { Onetimer::Runner.run_pending! }
+      end
+    ensure
+      Onetimer::Task.class_eval do
+        alias_method :respond_to?, :__original_respond_to_for_test?
+        remove_method :__original_respond_to_for_test?
+      end
+    end
+
+    assert_not Onetimer::Task.exists?(name: "20260101000000_runner_test_no_column")
+    assert(warned_messages.any? do |msg|
+      msg.include?("record_failures") && msg.include?("error_message")
+    end)
+  ensure
+    Onetimer.record_failures = nil
+  end
+
   class << self
     attr_accessor :run_count
   end
