@@ -50,7 +50,9 @@ Run pending tasks (idempotent — already-completed tasks are skipped):
 bin/rake onetimer:run
 ```
 
-Typically wired into your deploy entrypoint alongside `db:migrate`.
+Typically wired into your deploy entrypoint alongside `db:migrate`. Use
+`bin/rake onetimer:doctor` to verify the required unique index exists — see
+[docs/GUIDE.md](docs/GUIDE.md#running-tasks) for details.
 
 ## Configuration
 
