@@ -38,7 +38,14 @@ module Onetimer
     end
 
     def self.task_files
-      Dir.glob(Onetimer.tasks_dir.join("*.rb")).sort
+      files = Dir.glob(Onetimer.tasks_dir.join("*.rb")).sort
+      files.each do |file|
+        basename = File.basename(file)
+        unless basename.match?(/\A\d+_/)
+          Rails.logger.warn "[Onetimer] task file missing timestamp prefix, sort order is not guaranteed: #{basename}"
+        end
+      end
+      files
     end
     private_class_method :task_files
 

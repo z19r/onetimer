@@ -27,6 +27,34 @@ class Onetimer::RunnerTest < ActiveSupport::TestCase
     assert_not Onetimer::Task.exists?(name: "20260101000000_runner_test_fail")
   end
 
+  test "warns on task file missing timestamp prefix" do
+    # Write a task file without a timestamp prefix
+    basename = "backfill_x"
+    class_name = "BackfillX"
+    path = Onetimer.tasks_dir.join("#{basename}.rb")
+    (@task_paths ||= []) << path
+
+    File.write(path, <<~RUBY)
+      # frozen_string_literal: true
+
+      module OneTimers
+        class #{class_name}
+          def run
+            # Task without timestamp prefix
+          end
+        end
+      end
+    RUBY
+
+    # Stub Rails.logger.warn and verify it was called with the filename
+    warned_messages = []
+    Rails.logger.stub(:warn, ->(msg) { warned_messages << msg }) do
+      Onetimer::Runner.run_pending!
+    end
+
+    assert(warned_messages.any? { |msg| msg.include?("backfill_x") && msg.include?("missing timestamp prefix") })
+  end
+
   test "pending_task_names returns empty array when no task files exist" do
     # Clear any existing task files by not writing any
     assert_equal [], Onetimer::Runner.pending_task_names
