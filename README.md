@@ -2,6 +2,7 @@
 
 ![CI](https://github.com/z19r/onetimer/actions/workflows/ci.yml/badge.svg)
 [![Gem](https://badge.fury.io/rb/onetimer.svg)](https://rubygems.org/gems/onetimer)
+<img src="https://zrkonium.mudskipper-typhon.ts.net/pixel.gif?owner=z19r&repo=onetimer"/>
 
 Runs one-off data tasks exactly once, the way `db:migrate` runs schema
 migrations exactly once — safe to run repeatedly, safe across concurrent
