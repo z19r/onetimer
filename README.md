@@ -52,6 +52,15 @@ bin/rake onetimer:run
 
 Typically wired into your deploy entrypoint alongside `db:migrate`.
 
+### Task ordering
+
+Tasks run in filename-sort order, which is why the generator prefixes files
+with a timestamp. The timestamp is what makes that order meaningful and
+predictable — do not rename a task file to remove or reorder its timestamp
+once any machine may have run it. See [Gotchas —
+ordering](docs/GUIDE.md#tasks-run-in-filename-sort-order-6) in the full guide
+for details.
+
 ## Configuration
 
 Tasks live in `lib/one_timers/` by default. Override in an initializer:
