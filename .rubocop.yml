@@ -16,6 +16,10 @@ Style/Documentation:
 Metrics/MethodLength:
   Max: 15
 
+Metrics/ClassLength:
+  Exclude:
+    - "test/**/*_test.rb"
+
 Style/NumericLiterals:
   Exclude:
     - "test/dummy/db/schema.rb"

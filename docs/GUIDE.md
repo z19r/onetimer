@@ -105,6 +105,12 @@ bin/rake onetimer:run
 Idempotent — already-`completed` tasks are skipped. Wire it into your
 deploy entrypoint right alongside `db:migrate`.
 
+List what would run without running it:
+
+```bash
+bin/rake onetimer:pending
+```
+
 ## Configuration
 
 Two settings, set in an initializer:
@@ -187,9 +193,9 @@ machines can both run the same task.
 
 <https://github.com/z19r/onetimer/issues/5>
 
-No dry-run mode. `bin/rake onetimer:run` executes pending tasks
-immediately; there is no `--check` or `--pending` listing built in
-today.
+`bin/rake onetimer:run` executes pending tasks immediately — it doesn't
+support a dry-run flag. Use `bin/rake onetimer:pending` to list what would
+run without running it; see [Running tasks](#running-tasks).
 
 ### Tasks run in filename sort order (#6)
 
