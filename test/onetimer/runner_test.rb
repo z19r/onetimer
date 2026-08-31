@@ -27,6 +27,76 @@ class Onetimer::RunnerTest < ActiveSupport::TestCase
     assert_not Onetimer::Task.exists?(name: "20260101000000_runner_test_fail")
   end
 
+  test "with record_failures enabled, a failed task leaves a failed Task row with the error message" do
+    Onetimer.record_failures = true
+    write_task("20260101000000_runner_test_record_fail", 'raise "boom"')
+
+    assert_raises(RuntimeError) { Onetimer::Runner.run_pending! }
+
+    task = Onetimer::Task.find_by(name: "20260101000000_runner_test_record_fail")
+    assert task
+    assert_equal "failed", task.status
+    assert_equal "boom", task.error_message
+  ensure
+    Onetimer.record_failures = nil
+  end
+
+  test "with record_failures enabled, retrying a fixed task after a failure succeeds" do
+    Onetimer.record_failures = true
+    name = "20260101000000_runner_test_record_retry"
+    # The task file is only require'd once (Ruby caches by path), so simulate
+    # "fix the task and redeploy" with internal state: fails on the first
+    # run, succeeds on the second — same as a task that raised once and
+    # whose underlying issue was then fixed.
+    write_task(name, <<~RUBY)
+      @@attempts ||= 0
+      @@attempts += 1
+      raise "boom" if @@attempts == 1
+      Onetimer::RunnerTest.run_count += 1
+    RUBY
+
+    assert_raises(RuntimeError) { Onetimer::Runner.run_pending! }
+    assert Onetimer::Task.exists?(name: name, status: "failed")
+
+    Onetimer::Runner.run_pending!
+
+    assert Onetimer::Task.exists?(name: name, status: "completed")
+    assert_equal 1, self.class.run_count
+  ensure
+    Onetimer.record_failures = nil
+  end
+
+  test "with record_failures enabled but no error_message column, falls back to destroying the row and warns" do
+    Onetimer.record_failures = true
+    write_task("20260101000000_runner_test_no_column", 'raise "boom"')
+
+    warned_messages = []
+    Onetimer::Task.class_eval do
+      alias_method :__original_respond_to_for_test?, :respond_to?
+      define_method(:respond_to?) do |method, *args|
+        method == :error_message= ? false : __original_respond_to_for_test?(method, *args)
+      end
+    end
+
+    begin
+      Rails.logger.stub(:warn, ->(msg) { warned_messages << msg }) do
+        assert_raises(RuntimeError) { Onetimer::Runner.run_pending! }
+      end
+    ensure
+      Onetimer::Task.class_eval do
+        alias_method :respond_to?, :__original_respond_to_for_test?
+        remove_method :__original_respond_to_for_test?
+      end
+    end
+
+    assert_not Onetimer::Task.exists?(name: "20260101000000_runner_test_no_column")
+    assert(warned_messages.any? do |msg|
+      msg.include?("record_failures") && msg.include?("error_message")
+    end)
+  ensure
+    Onetimer.record_failures = nil
+  end
+
   test "verify_unique_index! returns true when the unique index exists" do
     result = Onetimer::Runner.verify_unique_index!
     assert_equal true, result
