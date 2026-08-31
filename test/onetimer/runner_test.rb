@@ -27,6 +27,29 @@ class Onetimer::RunnerTest < ActiveSupport::TestCase
     assert_not Onetimer::Task.exists?(name: "20260101000000_runner_test_fail")
   end
 
+  test "pending_task_names returns empty array when no task files exist" do
+    # Clear any existing task files by not writing any
+    assert_equal [], Onetimer::Runner.pending_task_names
+  end
+
+  test "pending_task_names includes a task file with no matching completed Task row" do
+    write_task("20260101000000_pending_test_one", "puts 'task one'")
+
+    names = Onetimer::Runner.pending_task_names
+    assert_includes names, "20260101000000_pending_test_one"
+  end
+
+  test "pending_task_names excludes a task file with a matching completed Task row" do
+    write_task("20260101000000_pending_test_two", "puts 'task two'")
+    name = "20260101000000_pending_test_two"
+
+    # Create a completed Task row
+    Onetimer::Task.create!(name: name, status: "completed", started_at: Time.current, finished_at: Time.current)
+
+    names = Onetimer::Runner.pending_task_names
+    assert_not_includes names, name
+  end
+
   class << self
     attr_accessor :run_count
   end
