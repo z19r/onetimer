@@ -1,0 +1,90 @@
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow">Ruby engine</div>
+      <h1 class="display">Exactly<br>once</h1>
+      <hr class="rule--deco">
+      <p class="lede">Runs one-off data tasks exactly once, the way <code>db:migrate</code> runs schema migrations exactly once &mdash; safe to run repeatedly, safe across concurrent deploy machines.</p>
+      <div class="hero-actions">
+        <a class="button button--primary" href="https://github.com/z19r/onetimer">View on GitHub</a>
+        <a class="button button--ghost" href="/docs/">Read the docs</a>
+      </div>
+    </div>
+    <div class="code-block" data-code-block>
+      <div class="code-block-head">
+        <span class="code-lang">terminal</span>
+        <button class="copy-btn" type="button" data-copy>Copy</button>
+      </div>
+      <pre><code>gem "onetimer"
+
+$ bundle install
+$ bin/rails generate onetimer:install
+$ bin/rails db:migrate
+$ bin/rake onetimer:run
+[Onetimer] completed 20260214090000_backfill_slugs</code></pre>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="rule--label"><span>What it does</span></div>
+    <div class="card-grid">
+      <article class="card">
+        <div class="card-eyebrow">Idempotent</div>
+        <h3>Skips completed work</h3>
+        <div class="card-rule"></div>
+        <p>Every task is tracked in <span class="tag">onetimer_tasks</span>. Already-completed tasks are skipped on the next run.</p>
+      </article>
+      <article class="card">
+        <div class="card-eyebrow">Concurrent-safe</div>
+        <h3>One machine wins the claim</h3>
+        <div class="card-rule"></div>
+        <p>A unique index on <span class="tag">name</span> makes claiming atomic: if two deploy machines race, only one runs the task.</p>
+      </article>
+      <article class="card">
+        <div class="card-eyebrow">Retryable</div>
+        <h3>Failures clear the row</h3>
+        <div class="card-rule"></div>
+        <p>A raising task destroys its claim row and re-raises, so the next deploy tries again.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="rule--label"><span>A task</span></div>
+    <div class="task-grid">
+      <div class="code-block" data-code-block>
+        <div class="code-block-head">
+          <span class="code-lang">lib/one_timers/20260214090000_backfill_slugs.rb</span>
+          <button class="copy-btn" type="button" data-copy>Copy</button>
+        </div>
+        <pre><code>module OneTimers
+  class BackfillSlugs
+    def run
+      # One-time task logic goes here.
+    end
+  end
+end</code></pre>
+      </div>
+      <div class="task-side">
+        <p>Generate <span class="tag">#run</span>, then run pending tasks:</p>
+        <div class="code-block code-block--inline" data-code-block>
+          <pre><code>bin/rake onetimer:new NAME=backfill_slugs
+bin/rake onetimer:run</code></pre>
+        </div>
+        <aside class="callout callout--caution">
+          <div class="callout-title">Runs on every deploy</div>
+          <div class="callout-body">Wire <span class="tag">onetimer:run</span> into your deploy entrypoint alongside <span class="tag">db:migrate</span>.</div>
+        </aside>
+        <div class="badge-row">
+          <span class="badge badge--pending">pending</span>
+          <span class="badge badge--running">running</span>
+          <span class="badge badge--completed">completed</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
