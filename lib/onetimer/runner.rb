@@ -11,6 +11,15 @@ module Onetimer
       task_files.each { |file| run_task(file) }
     end
 
+    def self.verify_unique_index!
+      return true if ActiveRecord::Base.connection.index_exists?(:onetimer_tasks, :name, unique: true)
+
+      error_message = "onetimer_tasks is missing a unique index on :name — concurrent " \
+                      "runs can double-run a task. Add add_index :onetimer_tasks, :name, " \
+                      "unique: true in a migration."
+      raise Onetimer::Error, error_message
+    end
+
     def self.generate!(name)
       timestamp = Time.current.strftime("%Y%m%d%H%M%S")
       class_name = name.camelize

@@ -27,6 +27,18 @@ class Onetimer::RunnerTest < ActiveSupport::TestCase
     assert_not Onetimer::Task.exists?(name: "20260101000000_runner_test_fail")
   end
 
+  test "verify_unique_index! returns true when the unique index exists" do
+    result = Onetimer::Runner.verify_unique_index!
+    assert_equal true, result
+  end
+
+  test "verify_unique_index! raises Onetimer::Error when the unique index is missing" do
+    ActiveRecord::Base.connection.stub(:index_exists?, false) do
+      error = assert_raises(Onetimer::Error) { Onetimer::Runner.verify_unique_index! }
+      assert_includes error.message, "unique index"
+    end
+  end
+
   class << self
     attr_accessor :run_count
   end

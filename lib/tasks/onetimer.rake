@@ -12,4 +12,10 @@ namespace :onetimer do
     path = Onetimer::Runner.generate!(name)
     puts "Created #{path}"
   end
+
+  desc "Verify the onetimer_tasks table has the required unique index on :name"
+  task doctor: :environment do
+    Onetimer::Runner.verify_unique_index!
+    puts "onetimer_tasks: unique index on :name present. OK."
+  end
 end
