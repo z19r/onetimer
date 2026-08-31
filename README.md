@@ -55,6 +55,7 @@ bin/rake onetimer:run
 ```
 
 Typically wired into your deploy entrypoint alongside `db:migrate`. Use
+`bin/rake onetimer:doctor` to verify the required unique index exists, and
 `bin/rake onetimer:pending` to list what would run without running it — see
 [docs/GUIDE.md](docs/GUIDE.md#running-tasks) for details.
 
