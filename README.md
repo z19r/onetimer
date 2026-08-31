@@ -44,6 +44,10 @@ module OneTimers
 end
 ```
 
+A task's identity is its filename (minus the timestamp). Renaming a task file after it may have run on any machine creates a new identity and causes the task to run twice — once under the old name and once under the new name. If you need to change a task, do it before it has run anywhere. Once a task has potentially run, never rename its file.
+
+Once a task is marked completed, editing its file has no effect. The `Runner` only checks whether a `Task` record exists for that filename; the file's contents are never examined. To change the logic of an already-completed task, write a new task file instead of editing the old one.
+
 Run pending tasks (idempotent — already-completed tasks are skipped):
 
 ```bash
