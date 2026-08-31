@@ -105,6 +105,13 @@ bin/rake onetimer:run
 Idempotent — already-`completed` tasks are skipped. Wire it into your
 deploy entrypoint right alongside `db:migrate`.
 
+Verify the `onetimer_tasks` table has the required unique index on `:name`
+(recommended in CI or right before a deploy):
+
+```bash
+bin/rake onetimer:doctor
+```
+
 List what would run without running it:
 
 ```bash
@@ -187,7 +194,8 @@ file instead of editing an old one.
 Concurrency safety depends entirely on the unique index on `name`. If
 you hand-roll the migration instead of using the generator and forget
 `add_index :onetimer_tasks, :name, unique: true`, two concurrent deploy
-machines can both run the same task.
+machines can both run the same task. Run `bin/rake onetimer:doctor` in CI
+or before a deploy to catch this — see [Running tasks](#running-tasks).
 
 ### No dry-run or pending listing mode (#5)
 

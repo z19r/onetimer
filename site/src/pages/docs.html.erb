@@ -1,0 +1,84 @@
+<div class="wrap docs-grid">
+  <nav class="side-nav">
+    <a href="#installation">Installation</a>
+    <a href="#usage" class="active">Usage</a>
+    <a href="#configuration">Configuration</a>
+    <a href="#databases">Supported databases</a>
+    <a href="#gotchas">Gotchas</a>
+  </nav>
+  <article class="docs-article">
+    <h1 id="installation">Installation</h1>
+    <hr class="rule">
+    <p>Add the gem, generate the migration and tasks directory, then migrate:</p>
+    <div class="code-block" data-code-block>
+      <div class="code-block-head">
+        <span class="code-lang">bash</span>
+        <button class="copy-btn" type="button" data-copy>Copy</button>
+      </div>
+      <pre><code>gem "onetimer"
+
+$ bundle install
+$ bin/rails generate onetimer:install
+$ bin/rails db:migrate</code></pre>
+    </div>
+    <p>The generator adds a migration for the <span class="tag">onetimer_tasks</span> tracking table and creates <span class="tag">lib/one_timers/</span>.</p>
+
+    <h1 id="usage">Usage</h1>
+    <hr class="rule">
+    <p>Generate a task, then run pending tasks. Already-completed tasks are skipped, so the command is safe to run on every deploy.</p>
+    <div class="code-block" data-code-block>
+      <div class="code-block-head">
+        <span class="code-lang">bash</span>
+        <button class="copy-btn" type="button" data-copy>Copy</button>
+      </div>
+      <pre><code>bin/rake onetimer:new NAME=backfill_something</code></pre>
+    </div>
+    <div class="code-block" data-code-block>
+      <div class="code-block-head">
+        <span class="code-lang">lib/one_timers/20260214090000_backfill_something.rb</span>
+        <button class="copy-btn" type="button" data-copy>Copy</button>
+      </div>
+      <pre><code>module OneTimers
+  class BackfillSomething
+    def run
+      # One-time task logic goes here.
+    end
+  end
+end</code></pre>
+    </div>
+    <div class="code-block" data-code-block>
+      <div class="code-block-head">
+        <span class="code-lang">bash</span>
+        <button class="copy-btn" type="button" data-copy>Copy</button>
+      </div>
+      <pre><code>bin/rake onetimer:run</code></pre>
+    </div>
+    <aside class="callout callout--caution">
+      <div class="callout-title">Runs on every deploy</div>
+      <div class="callout-body">Tasks must be safe to re-enter: a failed task destroys its claim row and is retried next deploy.</div>
+    </aside>
+
+    <h1 id="configuration">Configuration</h1>
+    <hr class="rule">
+    <p>Tasks live in <span class="tag">lib/one_timers/</span> by default. Override in an initializer:</p>
+    <div class="code-block" data-code-block>
+      <div class="code-block-head">
+        <span class="code-lang">config/initializers/onetimer.rb</span>
+        <button class="copy-btn" type="button" data-copy>Copy</button>
+      </div>
+      <pre><code>Rails.application.config.onetimer.tasks_dir = Rails.root.join("lib/data_tasks")</code></pre>
+    </div>
+
+    <h1 id="databases">Supported databases</h1>
+    <hr class="rule">
+    <p><span class="tag">Onetimer::Task</span> is a plain ActiveRecord model using only standard column types and a unique index &mdash; nothing Postgres/MySQL/SQLite-specific. It works on any database Rails/ActiveRecord supports, as long as unique index enforcement works (true for all mainstream adapters), since that's what prevents two deploy machines from double-running a task.</p>
+
+    <h1 id="gotchas">Gotchas</h1>
+    <hr class="rule">
+    <p>Known sharp edges &mdash; see the full list with GitHub issue links in <a href="https://github.com/z19r/onetimer/blob/main/docs/GUIDE.md#gotchas">docs/GUIDE.md</a>.</p>
+    <aside class="callout callout--note">
+      <div class="callout-title">Identity is the filename</div>
+      <div class="callout-body">A task's identity is its filename minus the timestamp. Renaming a file before every machine has run it can cause it to run twice under two names.</div>
+    </aside>
+  </article>
+</div>
