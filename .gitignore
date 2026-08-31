@@ -10,3 +10,10 @@
 /test/dummy/log/
 /test/dummy/tmp/
 Gemfile.lock
+
+/.claude/settings.local.json
+/.claude/.headroom_wrap_marker.json
+/.claude/whetstone.json
+/.rtk/
+/.serena/project.local.yml
+/.serena/cache/

@@ -1,8 +1,13 @@
 # Onetimer
 
+![CI](https://github.com/z19r/onetimer/actions/workflows/ci.yml/badge.svg)
+[![Gem](https://badge.fury.io/rb/onetimer.svg)](https://rubygems.org/gems/onetimer)
+
 Runs one-off data tasks exactly once, the way `db:migrate` runs schema
 migrations exactly once — safe to run repeatedly, safe across concurrent
 deploy machines.
+
+**Views:** <!--COUNTER:START-->0<!--COUNTER:END-->
 
 ## Installation
 
@@ -55,6 +60,11 @@ Tasks live in `lib/one_timers/` by default. Override in an initializer:
 Rails.application.config.onetimer.tasks_dir = Rails.root.join("lib/data_tasks")
 ```
 
+## Gotchas
+
+See [docs/GUIDE.md](docs/GUIDE.md#gotchas) for known sharp edges (renaming
+files, retry behavior, ordering, etc.).
+
 ## Development
 
 ```bash
@@ -77,4 +87,11 @@ settings.
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at
-https://github.com/z19r/onetimer.
+<https://github.com/z19r/onetimer>.
+
+## 📖 GuestBook — 0 Entries
+
+Open an issue with the `guestbook` label to sign.
+
+<!-- GUESTBOOK:START -->
+<!-- GUESTBOOK:END -->

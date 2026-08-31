@@ -1,0 +1,22 @@
+name: Guestbook
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  sign:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Sign guestbook
+        uses: z19r/gha-guestbook@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          guestbook_label: guestbook
+          readme_path: README.md
+          close_issue: "true"
