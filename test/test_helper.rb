@@ -8,4 +8,3 @@ require_relative "dummy/config/environment"
 load Rails.root.join("db/schema.rb")
 
 require "minitest/autorun"
-require "minitest/mock"
