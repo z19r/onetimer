@@ -8,7 +8,7 @@ Runs one-off data tasks exactly once, the way `db:migrate` runs schema
 migrations exactly once — safe to run repeatedly, safe across concurrent
 deploy machines.
 
-**Views:** <!--COUNTER:START-->13<!--COUNTER:END-->
+**Views:** <!--COUNTER:START-->14<!--COUNTER:END-->
 
 ## Installation
 
