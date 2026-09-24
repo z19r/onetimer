@@ -59,7 +59,7 @@ jobs:
 
       - name: Attest build provenance
         if: steps.gem.outputs.needed == 'true'
-        uses: actions/attest-build-provenance@v3
+        uses: actions/attest-build-provenance@v4
         with:
           subject-path: pkg/onetimer.gem
 
